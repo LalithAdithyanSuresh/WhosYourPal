@@ -4,21 +4,17 @@
 <div class="container mt-4">
     <div class="card shadow-lg p-4">
         <div class="row align-items-start">
-            <!-- Shelter Details (Left, Aligned to Top) -->
             <div class="col-md-8 order-1 order-md-1">
                 <h3 class="card-title">{{ shelter['NAME'] }}</h3>
                 <p class="card-text">
                     <strong>Location:</strong> {{ shelter['LOCATION'] }} <br />
                     <strong>Contact:</strong> {{ shelter['CONTACT'] }} <br />
                 </p>
-
-                <!-- Show Pets Button -->
                 <a href="/shelter/{{ shelter['SHELTER_ID'] }}/pets" class="btn btn-primary mt-3">
                     Show Pets in Shelter
                 </a>
             </div>
 
-            <!-- Dynamic Building Image (Right) -->
             <div class="col-md-4 order-2 order-md-2 mb-3 mb-md-0 text-center">
                 <img src="https://robohash.org/{{ shelter['NAME'] }}?set=set3&size=250x250"
                     alt="Shelter Building"
@@ -27,7 +23,6 @@
             </div>
         </div>
 
-        <!-- Google Maps Embed with Full Width Below -->
         <div class="mt-4">
             <h5>Location on Map:</h5>
             <iframe
@@ -40,8 +35,6 @@
                 allowfullscreen
             ></iframe>
         </div>
-
-        <!-- Back Button -->
         <a href="/" class="btn btn-secondary mt-3">Back to Pets</a>
     </div>
 </div>

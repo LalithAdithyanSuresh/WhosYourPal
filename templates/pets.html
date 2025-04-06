@@ -5,10 +5,10 @@
     .filter-card .card-header {
         background-color: #e9ecef;
         border-bottom: 1px solid #dee2e6;
-        cursor: pointer; /* Indicate the header is clickable */
+        cursor: pointer;
     }
     .filter-card .card-header h5 span {
-        user-select: none; /* Prevent text selection on header */
+        user-select: none; 
     }
     .filter-card .form-label {
         font-weight: 500;
@@ -48,16 +48,16 @@
      .filter-card .form-check-label.small {
          font-size: 0.85em;
      }
-     /* Style for the collapse toggle icon */
+     
      .filter-toggle-icon::before {
-        content: "\f077"; /* Font Awesome Angle Up */
+        content: "\f077"; 
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
         transition: transform 0.35s ease;
         display: inline-block;
      }
     .filter-card .card-header[aria-expanded="false"] .filter-toggle-icon::before {
-         transform: rotate(180deg); /* Rotate to Angle Down when collapsed */
+         transform: rotate(180deg); 
      }
 </style>
 {% endblock %}
@@ -184,7 +184,7 @@
                             <strong class="text-success">Fee: ₹{{ dog['Amount'] }}</strong>
                         </p>
                         <div class="mt-2">
-                             <!-- <button type="button" class="btn btn-outline-primary btn-sm me-1 btn-view-details" data-toggle="modal" data-target="#petDetailModal">Details</button> -->
+                             
                              <a href="/pet/{{ dog['PET_ID'] }}" class="btn btn-outline-primary btn-sm me-1 btn-view-details" target="_blank">Details</a>
                              <a href="/shelter/{{ dog['SHELTER_ID'] }}" class="btn btn-outline-info btn-sm me-1" target="_blank">Shelter</a>
                              <a href="/adopt/{{ dog['PET_ID'] }}" class="btn btn-success btn-sm">Adopt</a>
@@ -353,10 +353,10 @@
         shelterCheckboxes.forEach(cb => cb.checked = false);
         applyFilters();
 
-        // Ensure the collapse section is shown when resetting
+       
         $('#filterCollapse').collapse('show');
-        // Manually set aria-expanded on header if needed, though BS usually handles it
-        // $('#filterHeader').attr('aria-expanded', 'true');
+        
+        
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -401,8 +401,8 @@
         modal.find('#modalAdoptLink').attr('href', adoptUrl);
     });
 
-    // Optional: Update header aria-expanded attribute explicitly on collapse events
-    // This ensures screen readers are correctly informed.
+    
+    
     $('#filterCollapse').on('shown.bs.collapse', function () {
         $('#filterHeader').attr('aria-expanded', 'true');
     });

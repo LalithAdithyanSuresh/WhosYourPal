@@ -107,66 +107,66 @@
              color: #c2a681;
         }
         #loading-overlay {
-            position: fixed; /* Cover the entire viewport */
+            position: fixed; 
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #fcf7e5; /* Match your body background or use a loading color */
-            z-index: 9999; /* Ensure it's on top of everything */
-            display: flex; /* Center the content */
+            background-color: #fcf7e5; 
+            z-index: 9999; 
+            display: flex; 
             justify-content: center;
             align-items: center;
-            opacity: 1; /* Start fully visible */
-            visibility: visible; /* Start visible */
-            transition: opacity 0.8s ease-out, visibility 0s linear 0.8s; /* Fade out effect */
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease-out, visibility 0s linear 0.8s; 
         }
 
-        /* Class added by JS when page is loaded */
+        
         #loading-overlay.hidden {
             opacity: 0;
             visibility: hidden;
         }
 
         .loading-logo-container {
-            position: relative; /* Needed for positioning radar effect */
+            position: relative;
             text-align: center;
         }
 
         #loading-logo {
-            max-width: 150px; /* Adjust size as needed */
+            max-width: 150px;
             height: auto;
-            /* Initial state for zoom-out animation */
+           
             transform: scale(1);
             opacity: 1;
-            /* Animation applied when hiding starts */
+            
             transition: transform 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045), opacity 0.5s ease-out; /* Zoom/fade out */
         }
 
-        /* Animation applied when hiding overlay */
+        
         #loading-overlay.hidden #loading-logo {
             transform: scale(1.8); /* Zoom IN effect */
             opacity: 0;
         }
 
 
-        /* --- Radar Effect (Example using pseudo-elements) --- */
-        /* This is a BASIC example, you'll need to customize heavily for a radar */
+        
+        
         .radar-effect {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px; /* Start small */
+            width: 50px; 
             height: 50px;
             border-radius: 50%;
-            border: 3px solid rgba(194, 166, 129, 0.5); /* Theme color, semi-transparent */
-            opacity: 0; /* Start invisible */
+            border: 3px solid rgba(194, 166, 129, 0.5); 
+            opacity: 0;
             animation: radarPulse 2s infinite ease-out;
-            z-index: -1; /* Place behind the logo */
+            z-index: -1; 
         }
 
-        /* Keyframes for the pulsing radar effect */
+       
         @keyframes radarPulse {
             0% {
                 width: 50px;
@@ -179,28 +179,28 @@
                 border-width: 2px;
             }
             100% {
-                width: 250px; /* Expand size */
+                width: 250px; 
                 height: 250px;
                 opacity: 0;
                 border-width: 1px;
             }
         }
-        /* Stop radar animation when hiding */
+        
         #loading-overlay.hidden .radar-effect {
             animation: none;
             opacity: 0;
         }
 
-        /* Optional: Add a slight delay before showing content */
+        
         body.loading {
-            overflow: hidden; /* Prevent scrolling while loading */
+            overflow: hidden; 
         }
         body:not(.loading) main,
         body:not(.loading) footer,
         body:not(.loading) nav {
-            /* You might add a slight fade-in here if desired */
+            
             opacity: 1;
-            transition: opacity 0.5s ease-in 0.2s; /* Example fade-in */
+            transition: opacity 0.5s ease-in 0.2s;
         }
     </style>
 </head>

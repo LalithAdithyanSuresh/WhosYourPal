@@ -3,8 +3,8 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pymysql
 from functools import wraps
-import os # Import the os module
-from dotenv import load_dotenv # Import load_dotenv
+import os
+from dotenv import load_dotenv
 
 
 

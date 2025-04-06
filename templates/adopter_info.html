@@ -22,11 +22,10 @@
          background-color: #449d44;
          border-color: #398439;
      }
-     .form-control:focus, .form-select:focus { /* Added form-select for BS5+ */
+     .form-control:focus, .form-select:focus { 
          border-color: #c2a681;
          box-shadow: 0 0 0 0.2rem rgba(194, 166, 129, 0.25);
      }
-     /* Styling for BS4 Select Arrow */
      .info-card .form-control {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
         background-repeat: no-repeat;
@@ -63,7 +62,6 @@
               {% endif %}
             {% endwith %}
 
-            {# The form should POST back to the same /adopt/<pet_id> route #}
             <form method="POST" action="{{ url_for('adopt_pet', pet_id=pet_id) }}">
                 <div class="form-group">
                     <label for="age">Your Age</label>

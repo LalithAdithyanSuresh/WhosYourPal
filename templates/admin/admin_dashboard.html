@@ -5,7 +5,7 @@
 {% block head_extra %}
 <style>
     .stat-card {
-        border-left: 5px solid #8D6E63; /* Theme color accent */
+        border-left: 5px solid #8D6E63; 
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .stat-card:hover {
@@ -39,7 +39,7 @@
             <div class="card-body text-center">
                 <h5><i class="fas fa-paw mr-2"></i>Pets Listed</h5>
                 <p class="display-4">{{ listed_pets_count | default(0) }}</p>
-                <a href="{{ url_for('admin_my_listings') }}">View Your Pets <i class="fas fa-arrow-right ml-1"></i></a> {# Link to a future 'manage pets' page #}
+                <a href="{{ url_for('admin_my_listings') }}">View Your Pets <i class="fas fa-arrow-right ml-1"></i></a> 
             </div>
         </div>
     </div>

@@ -11,7 +11,7 @@
     </div>
     <div class="card-body p-4">
         <form method="POST" action="{{ url_for('admin_add_pet') }}" enctype="multipart/form-data">
-            {{ form.hidden_tag() if form and form.hidden_tag }} {# CSRF token #}
+            {{ form.hidden_tag() if form and form.hidden_tag }} 
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">

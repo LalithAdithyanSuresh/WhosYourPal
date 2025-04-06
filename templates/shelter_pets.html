@@ -3,14 +3,9 @@
 {% block content %}
 <div class="container mt-4">
     <div class="card shadow-lg d-flex flex-row align-items-center p-2">
-        <!-- Random image using RoboHash -->
         <img src="https://robohash.org/{{ pets['NAME'] }}?set=set4&size=100x100"
             class="img-fluid rounded" alt="{{ pets['NAME'] }}" style="width: 100px; height: 100px;" />
-        
-        <!-- Vertical line separator -->
         <div class="mx-3" style="border-left: 2px solid #ddd; height: 100px;"></div>
-
-        <!-- Dog details on the right -->
         <div class="card-body">
             <h5 class="card-title">{{ pets['NAME'] }}</h5>
             <p class="card-text mb-0">
@@ -18,7 +13,6 @@
                 <strong>Color:</strong> {{ pets['COLOR'] }} <strong> | Age:</strong> {{ pets['AGE'] }} <br />
                 <strong>Shelter:</strong> 
                 {{ pets['SHELTERS.NAME'] }}
-                <!-- New tab icon with link to shelter details -->
                 <a href="/shelter/{{ pets['SHELTER_ID'] }}" target="_blank" title="View Shelter Details">
                     <i class="fas fa-external-link-alt ml-1"></i>
                 </a>

@@ -46,14 +46,12 @@
 {% block content %}
 <h2 class="mb-4">Manage Adoption Requests for Your Shelter</h2>
 
-<!-- Filter Section - Expanded with Search Bars -->
 <div class="card filter-section shadow-sm p-3">
     <form method="GET" action="{{ url_for('admin_view_adoptions') }}" id="filterSortForm">
         <input type="hidden" name="sort_by" value="{{ request.args.get('sort_by', 'ADOPTION_DATE') }}" id="sortBy">
         <input type="hidden" name="sort_order" value="{{ request.args.get('sort_order', 'DESC') }}" id="sortOrder">
 
         <div class="row align-items-end">
-            {# Row 1: Search Bars #}
             <div class="col-md-4 mb-3">
                 <label for="filter_adopter_name">Search Adopter Name:</label>
                 <input type="text" id="filter_adopter_name" name="adopter_name" class="form-control form-control-sm" placeholder="Enter username..." value="{{ request.args.get('adopter_name', '') }}">
@@ -67,7 +65,6 @@
                  <input type="text" id="filter_pet_name" name="pet_name" class="form-control form-control-sm" placeholder="Enter pet name..." value="{{ request.args.get('pet_name', '') }}">
             </div>
 
-             {# Row 2: Status Dropdown & Buttons #}
             <div class="col-md-6 mb-2">
                 <label for="filter_status">Filter by Status:</label>
                 <select id="filter_status" name="status" class="form-control form-control-sm">
@@ -85,7 +82,6 @@
     </form>
 </div>
 
-{# --- The rest of the template (Table structure) remains the same --- #}
 <div class="card shadow-sm">
      <div class="card-header d-flex justify-content-between align-items-center">
        <span>Adoption Records</span>
@@ -154,7 +150,6 @@
 {% endblock %}
 
 {% block scripts %}
-{# --- Keep the same JavaScript from the previous version for sorting --- #}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tableHeaders = document.querySelectorAll('table thead th[data-sortkey]');

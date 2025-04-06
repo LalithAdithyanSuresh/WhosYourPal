@@ -28,14 +28,13 @@
          color: #495057;
      }
 
-    /* --- Table Styles --- */
     .table thead th {
         background-color: #e9ecef;
         border-bottom: 2px solid #dee2e6;
         font-size: 0.9em;
         font-weight: 600;
         color: #495057;
-        white-space: nowrap; /* Prevent headers wrapping */
+        white-space: nowrap; 
     }
     .table tbody td {
         vertical-align: middle;
@@ -51,7 +50,7 @@
     .table .pet-name {
         font-weight: 500;
         color: #5D4037;
-        display: block; /* Name on its own line */
+        display: block; 
     }
     .table .pet-breed {
         font-size: 0.9em;
@@ -59,25 +58,23 @@
     }
     .table .pet-actions .btn-sm {
         margin-right: 0.3rem;
-        margin-bottom: 0.2rem; /* Reduce bottom margin in table */
-        padding: 0.2rem 0.4rem; /* Smaller padding */
-        font-size: 0.8em; /* Smaller font */
+        margin-bottom: 0.2rem; 
+        padding: 0.2rem 0.4rem; 
+        font-size: 0.8em; 
     }
      .table .pet-actions .btn-sm i {
-         margin-right: 0.2rem; /* Smaller icon margin */
+         margin-right: 0.2rem; 
      }
-
-     /* Status specific colors */
+    
     .table .badge {
          font-size: 0.8em;
          padding: 0.4em 0.6em;
          font-weight: 500;
     }
-    .status-available { background-color: #28a745; color: white; } /* Green */
-    .status-pending { background-color: #ffc107; color: #343a40; } /* Yellow */
-    .status-adopted { background-color: #6c757d; color: white; } /* Grey */
+    .status-available { background-color: #28a745; color: white; } 
+    .status-pending { background-color: #ffc107; color: #343a40; } 
+    .status-adopted { background-color: #6c757d; color: white; } 
 
-    /* No results message */
     .no-pets-message {
         background-color: #f8f9fa;
         border: 1px dashed #ced4da;
@@ -93,7 +90,6 @@
     <a href="{{ url_for('admin_add_pet') }}" class="btn btn-primary"><i class="fas fa-plus-circle mr-1"></i> Add New Pet</a>
 </div>
 
-<!-- Filter Section -->
 <div class="card filter-section shadow-sm p-3">
     <form method="GET" action="{{ url_for('admin_my_listings') }}">
         <div class="row align-items-end">
@@ -128,7 +124,6 @@
 </div>
 
 
-<!-- Pet Listings Table -->
 <div class="card shadow-sm">
      <div class="card-header">
          Pet Listings
@@ -144,7 +139,6 @@
                         <th scope="col">Species</th>
                         <th scope="col">Age</th>
                         <th scope="col">Fee</th>
-                        <!-- <th scope="col">Listed</th> -->
                         <th scope="col">Status</th>
                         <th scope="col" style="min-width: 220px;">Actions</th>
                     </tr>
@@ -166,7 +160,6 @@
                          <td>{{ pet.SPECIES }}</td>
                         <td>{{ pet.AGE | default('N/A') }} yrs</td>
                         <td>₹{{ pet.Amount | default('N/A') }}</td>
-                        <!-- <td>{{ pet.DATE_LISTED.strftime('%Y-%m-%d') if pet.DATE_LISTED else 'N/A' }}</td> -->
                         <td>
                              {% if pet.adoption_status == 'Available' %}
                                 <span class="badge status-available">Available</span>
@@ -182,12 +175,6 @@
                              <a href="#" class="btn btn-outline-primary btn-sm" title="Medical Info" data-toggle="modal" data-target="#medicalInfoModal" data-pet-id="{{ pet.PET_ID }}" data-pet-name="{{ pet.NAME }}">
                                  <i class="fas fa-notes-medical"></i><span class="d-none d-lg-inline"> Medical</span>
                              </a>
-                             <!-- <a href="#" class="btn btn-outline-secondary btn-sm" title="Edit Pet">
-                                 <i class="fas fa-edit"></i><span class="d-none d-lg-inline"> Edit</span>
-                             </a> -->
-                             <!-- <a href="{{ url_for('admin_view_adoptions') }}?pet_id={{ pet.PET_ID }}" class="btn btn-outline-info btn-sm" title="View Adoptions">
-                                 <i class="fas fa-clipboard-list"></i><span class="d-none d-lg-inline"> Adoptions</span>
-                             </a> -->
                         </td>
                     </tr>
                     {% endfor %}
@@ -202,16 +189,8 @@
             </div>
         {% endif %}
     </div>
-    {# Optional: Pagination if needed #}
-    <!--
-    <div class="card-footer text-muted">
-        Pagination Controls Here
-    </div>
-    -->
 </div>
 
-
-<!-- Medical Info Modal Placeholder (Keep this the same as before) -->
 <div class="modal fade" id="medicalInfoModal" tabindex="-1" aria-labelledby="medicalInfoModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -222,7 +201,6 @@
         </button>
       </div>
       <div class="modal-body">
-         <!-- <p><i>Loading medical records...</i></p> -->
          <div id="medicalRecordsContent">
              <ul class="list-group">
                  <li class="list-group-item"><strong>Vaccination Status:</strong> Up to date (Example)</li>
@@ -267,34 +245,29 @@
 
 {% block scripts %}
 <script>
-    // Basic JavaScript for Modal interaction
     $('#medicalInfoModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var petId = button.data('pet-id'); // Extract pet ID
-        var petName = button.data('pet-name'); // Extract pet name
-
+        var button = $(event.relatedTarget); 
+        var petId = button.data('pet-id'); 
+        var petName = button.data('pet-name'); 
         var modal = $(this);
-        modal.find('#modalPetNameMed').text(petName); // Set pet name in modal title
-        modal.find('#modalPetIdMed').val(petId); // Set hidden pet ID in form
-
+        modal.find('#modalPetNameMed').text(petName); 
+        modal.find('#modalPetIdMed').val(petId); 
         var recordsContent = modal.find('#medicalRecordsContent');
-        // Set loading state
         recordsContent.html('<div class="text-center p-3"><div class="spinner-border spinner-border-sm text-secondary" role="status"><span class="sr-only">Loading...</span></div> Fetching records...</div>');
-
-        // --- AJAX call to load existing medical records ---
+        
         $.ajax({
-            url: '/admin/get_medical_records/' + petId, // Your endpoint to fetch records
+            url: '/admin/get_medical_records/' + petId, 
             method: 'GET',
-            dataType: 'json', // Expect JSON response
+            dataType: 'json', 
             success: function(response) {
-                // --- FIXED: Parse JSON and build HTML ---
+                
                 if (response.records && Array.isArray(response.records) && response.records.length > 0) {
                     var recordsHtml = '<ul class="list-group list-group-flush">';
                     response.records.forEach(function(record) {
-                        // Safely access properties, provide defaults
+                        
                         var treatment = record.TREATMENT || 'N/A';
                         var recordDate = record.DATE || 'No Date';
-                        var medicine = record.MEDICINE || null; // Check if medicine exists
+                        var medicine = record.MEDICINE || null; 
                         var vetName = record.VET_NAME || 'N/A';
 
                         recordsHtml += '<li class="list-group-item">';
@@ -309,12 +282,12 @@
                          recordsHtml += '</li>';
                     });
                     recordsHtml += '</ul>';
-                    recordsContent.html(recordsHtml); // Update with formatted records
+                    recordsContent.html(recordsHtml); 
                 } else {
-                     // Handle case where 'records' array is empty or missing
+                     
                     recordsContent.html('<p class="text-muted p-3 text-center">No medical records found for ' + petName + '.</p>');
                 }
-                // --- END FIX ---
+               
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error("AJAX Error fetching records:", textStatus, errorThrown, jqXHR.responseJSON);
@@ -325,44 +298,35 @@
                 recordsContent.html('<p class="text-danger p-3 text-center">' + errorMsg + '</p>');
             }
         });
-         // --- End AJAX GET ---
+         
     });
 
-    // Handle form submission via AJAX for adding medical record
+    
     $('#addMedicalRecordForm').on('submit', function(event) {
-         event.preventDefault(); // Prevent default form submission
+         event.preventDefault(); 
          var form = $(this);
-         var formData = form.serialize(); // Get form data
-         var petId = $('#modalPetIdMed').val(); // Get pet ID again
+         var formData = form.serialize(); 
+         var petId = $('#modalPetIdMed').val(); 
          var addButton = form.find('button[type="submit"]');
-
-         // Disable button to prevent multiple submits
          addButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...');
-
-         // --- AJAX POST request to add medical record ---
          $.ajax({
-            url: '/admin/add_medical_record/' + petId, // Your endpoint to add record
+            url: '/admin/add_medical_record/' + petId, 
             method: 'POST',
             data: formData,
-            dataType: 'json', // Expect JSON response
+            dataType: 'json', 
             success: function(response) {
-                // Use message from server response if available
                 alert(response.message || 'Medical record added successfully!');
-                // --- FIXED: Trigger modal show again to refresh records ---
-                // Find the original button that opened the modal to pass as relatedTarget
                 var originalButton = $('a[data-target="#medicalInfoModal"][data-pet-id="' + petId + '"]');
                 if (originalButton.length) {
                     $('#medicalInfoModal').trigger('show.bs.modal', { relatedTarget: originalButton[0] });
                 } else {
-                    // Fallback if original button can't be found easily, just reload list manually
-                     $('#medicalInfoModal').find('#medicalRecordsContent').html('<p><i>Refreshing records...</i></p>'); // Indicate refresh
-                     // Re-fetch (duplicate code - consider making a function)
+                     $('#medicalInfoModal').find('#medicalRecordsContent').html('<p><i>Refreshing records...</i></p>'); 
                      $.ajax({
                         url: '/admin/get_medical_records/' + petId, method: 'GET', dataType: 'json',
-                        success: function(refreshedResponse){ /* ... same success logic as above ... */
+                        success: function(refreshedResponse){ 
                              if (refreshedResponse.records && Array.isArray(refreshedResponse.records) && refreshedResponse.records.length > 0) {
                                  var recordsHtml = '<ul class="list-group list-group-flush">';
-                                 refreshedResponse.records.forEach(function(record) { /* ... build html ... */
+                                 refreshedResponse.records.forEach(function(record) { 
                                     var treatment = record.TREATMENT || 'N/A';
                                     var recordDate = record.DATE || 'No Date';
                                     var medicine = record.MEDICINE || null;
@@ -380,9 +344,7 @@
                         error: function(){ $('#medicalInfoModal').find('#medicalRecordsContent').html('<p class="text-danger">Error refreshing records.</p>'); }
                      });
                 }
-                // Clear the form fields after successful submission
                 form.trigger('reset');
-                // --- END FIX ---
             },
             error: function(jqXHR, textStatus, errorThrown) {
                  console.error("AJAX Error adding record:", textStatus, errorThrown, jqXHR.responseJSON);
@@ -390,19 +352,13 @@
                  if(jqXHR.responseJSON && jqXHR.responseJSON.error) {
                      errorMsg += ' ' + jqXHR.responseJSON.error;
                  }
-                 alert(errorMsg); // Show error message
+                 alert(errorMsg); 
             },
             complete: function() {
-                 // Re-enable button regardless of success/error
+                 
                  addButton.prop('disabled', false).html('Add Record');
             }
          });
-         // --- End AJAX POST ---
-
-         // --- FIXED: Removed simulation alert ---
-         // alert('Medical record submission simulation (AJAX needed). Data: ' + formData);
-         // $('#medicalInfoModal').modal('hide'); // Don't hide immediately, wait for AJAX response
-         // --- END FIX ---
     });
 </script>
 {% endblock %}
