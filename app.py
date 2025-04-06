@@ -121,6 +121,12 @@ def picon(path):
 @app.route("/shelter/icon/<path:path>")
 def sicon(path):
     return send_from_directory("assets/icons", path)
+@app.route("/login/icon/<path:path>")
+def licon(path):
+    return send_from_directory("assets/icons", path)
+@app.route("/register/icon/<path:path>")
+def ricon(path):
+    return send_from_directory("assets/icons", path)
 # === USER Routes ===
 @app.route("/register", methods=["GET", "POST"])
 def register():
