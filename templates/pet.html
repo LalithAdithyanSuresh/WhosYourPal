@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ pet['NAME'] }} - Details - Who's Your Pal?{% endblock %}
+
+{% block head_extra %}
+<style>
+    .pet-detail-card {
+        background-color: #fff;
+        border: 1px solid rgba(194, 166, 129, 0.4);
+        border-radius: 0.5rem;
+    }
+    .pet-detail-image {
+        border-radius: 0.3rem;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #eee;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .detail-header {
+        color: #5D4037; /* Dark theme brown */
+        border-bottom: 2px solid #c2a681; /* Theme accent */
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .detail-header .fa-paw {
+        color: #8D6E63; /* Muted brown */
+        margin-right: 0.5rem;
+    }
+    .detail-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .detail-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0eade; /* Very light separator */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .detail-list li:last-child {
+        border-bottom: none;
+    }
+    .detail-list strong {
+        color: #8D6E63; /* Muted brown */
+        min-width: 80px; /* Align labels */
+        display: inline-block;
+    }
+    .detail-list span { /* The actual value */
+        color: #343a40;
+        text-align: right;
+    }
+    .shelter-link a {
+        color: #8D6E63;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .shelter-link a:hover {
+        color: #5D4037;
+        text-decoration: underline;
+    }
+    .shelter-link .fas {
+        font-size: 0.9em;
+        color: #c2a681; /* Lighter theme color for icon */
+        margin-left: 0.3rem;
+    }
+    .adopt-button-container {
+        margin-top: 2rem;
+        text-align: center; /* Center button */
+    }
+    .adopt-button-container .btn-primary {
+        background-color: #8D6E63;
+        border-color: #795548;
+        padding: 0.8rem 2.5rem;
+        font-size: 1.1rem;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .adopt-button-container .btn-primary:hover {
+        background-color: #5D4037;
+        border-color: #4E342E;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="card pet-detail-card shadow-sm p-4">
+        <div class="row">
+            <div class="col-md-5 text-center mb-4 mb-md-0">
+                <img src="https://robohash.org/{{ pet['NAME'] | urlencode }}?set=set4&size=350x350" class="pet-detail-image" alt="{{ pet['NAME'] }}">
+            </div>
+            <div class="col-md-7">
+                <h1 class="detail-header">
+                    <i class="fas fa-paw"></i>Meet {{ pet['NAME'] }}
+                </h1>
+
+                <ul class="detail-list">
+                    <li><strong>Species:</strong> <span>{{ pet['SPECIES'] }}</span></li>
+                    <li><strong>Breed:</strong> <span>{{ pet['BREED'] }}</span></li>
+                    <li><strong>Color:</strong> <span>{{ pet['COLOR'] | default('N/A') }}</span></li>
+                    <li><strong>Age:</strong> <span>{{ pet['AGE'] | default('N/A') }} years</span></li>
+                    <li><strong>Height:</strong> <span>{{ pet['HEIGHT'] | default('N/A') }} cms</span></li>
+                    <li><strong>Weight:</strong> <span>{{ pet['WEIGHT'] | default('N/A') }} Kg</span></li>
+                    <li class="shelter-link">
+                        <strong>Shelter:</strong>
+                        <span>
+                            <a href="/shelter/{{ pet['SHELTER_ID'] }}" target="_blank" title="View {{ pet['shelter_name'] }} Details">
+                                {{ pet['shelter_name'] | default('Unknown Shelter') }}
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+
+                <div class="adopt-button-container">
+                    <a href="/adopt/{{ pet['PET_ID'] }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-heart mr-2"></i>Ready to Adopt {{ pet['NAME'] }}?
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

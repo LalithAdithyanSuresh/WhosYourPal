@@ -1,0 +1,408 @@
+{% extends "admin/admin_layout.html" %}
+
+{% block title %}My Shelter's Pets{% endblock %}
+
+{% block head_extra %}
+<style>
+    .filter-section {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 0.3rem;
+        margin-bottom: 1.5rem;
+    }
+     .filter-section .form-control-sm {
+        font-size: 0.875rem;
+        border-radius: 0.2rem;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 16px 12px;
+        padding-right: 1.75rem;
+        appearance: none;
+    }
+     .filter-section label {
+         font-size: 0.9em;
+         font-weight: 500;
+         color: #495057;
+     }
+
+    /* --- Table Styles --- */
+    .table thead th {
+        background-color: #e9ecef;
+        border-bottom: 2px solid #dee2e6;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #495057;
+        white-space: nowrap; /* Prevent headers wrapping */
+    }
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 0.95em;
+    }
+    .table .pet-thumbnail {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 0.2rem;
+        border: 1px solid #eee;
+    }
+    .table .pet-name {
+        font-weight: 500;
+        color: #5D4037;
+        display: block; /* Name on its own line */
+    }
+    .table .pet-breed {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+    .table .pet-actions .btn-sm {
+        margin-right: 0.3rem;
+        margin-bottom: 0.2rem; /* Reduce bottom margin in table */
+        padding: 0.2rem 0.4rem; /* Smaller padding */
+        font-size: 0.8em; /* Smaller font */
+    }
+     .table .pet-actions .btn-sm i {
+         margin-right: 0.2rem; /* Smaller icon margin */
+     }
+
+     /* Status specific colors */
+    .table .badge {
+         font-size: 0.8em;
+         padding: 0.4em 0.6em;
+         font-weight: 500;
+    }
+    .status-available { background-color: #28a745; color: white; } /* Green */
+    .status-pending { background-color: #ffc107; color: #343a40; } /* Yellow */
+    .status-adopted { background-color: #6c757d; color: white; } /* Grey */
+
+    /* No results message */
+    .no-pets-message {
+        background-color: #f8f9fa;
+        border: 1px dashed #ced4da;
+        padding: 2rem;
+        border-radius: 0.3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-paw mr-2"></i>My Shelter's Listed Pets</h2>
+    <a href="{{ url_for('admin_add_pet') }}" class="btn btn-primary"><i class="fas fa-plus-circle mr-1"></i> Add New Pet</a>
+</div>
+
+<!-- Filter Section -->
+<div class="card filter-section shadow-sm p-3">
+    <form method="GET" action="{{ url_for('admin_my_listings') }}">
+        <div class="row align-items-end">
+            <div class="col-md-3 mb-2">
+                <label for="filter_name">Name Contains:</label>
+                <input type="text" id="filter_name" name="name" class="form-control form-control-sm" placeholder="Search by name..." value="{{ request.args.get('name', '') }}">
+            </div>
+            <div class="col-md-3 mb-2">
+                <label for="filter_species">Species:</label>
+                <select id="filter_species" name="species" class="form-control form-control-sm">
+                    <option value="">All Species</option>
+                     {% for species_opt in distinct_species %}
+                        <option value="{{ species_opt }}" {% if request.args.get('species') == species_opt %}selected{% endif %}>{{ species_opt }}</option>
+                     {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 mb-2">
+                <label for="filter_status">Adoption Status:</label>
+                <select id="filter_status" name="status" class="form-control form-control-sm">
+                    <option value="">All Statuses</option>
+                    <option value="Available" {% if request.args.get('status') == 'Available' %}selected{% endif %}>Available</option>
+                    <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending/Underway</option>
+                    <option value="Adopted" {% if request.args.get('status') == 'Adopted' %}selected{% endif %}>Adopted</option>
+                 </select>
+            </div>
+            <div class="col-md-3 mb-2 d-flex">
+                 <button type="submit" class="btn btn-secondary btn-sm mr-2 flex-grow-1"><i class="fas fa-search mr-1"></i>Filter</button>
+                 <a href="{{ url_for('admin_my_listings') }}" class="btn btn-outline-secondary btn-sm flex-grow-1">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<!-- Pet Listings Table -->
+<div class="card shadow-sm">
+     <div class="card-header">
+         Pet Listings
+     </div>
+     <div class="card-body p-0">
+        {% if pets %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="my-pets-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 80px;">Image</th>
+                        <th scope="col">Name / Breed</th>
+                        <th scope="col">Species</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Fee</th>
+                        <!-- <th scope="col">Listed</th> -->
+                        <th scope="col">Status</th>
+                        <th scope="col" style="min-width: 220px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pet in pets %}
+                    <tr class="pet-listing-item" data-pet-id="{{ pet.PET_ID }}" data-pet-name="{{ pet.NAME }}" data-pet-species="{{ pet.SPECIES }}" data-pet-status="{{ pet.adoption_status }}">
+                        <td>
+                            {% if pet.IMAGE_FILENAME %}
+                                <img src="{{ url_for('static', filename='uploads/' + pet.IMAGE_FILENAME) }}" class="pet-thumbnail" alt="{{ pet.NAME }}">
+                            {% else %}
+                                <img src="https://robohash.org/{{ pet.NAME | urlencode }}?set=set4&size=60x60" class="pet-thumbnail" alt="{{ pet.NAME }}">
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong class="pet-name">{{ pet.NAME }}</strong>
+                            <span class="pet-breed">{{ pet.BREED }}</span>
+                        </td>
+                         <td>{{ pet.SPECIES }}</td>
+                        <td>{{ pet.AGE | default('N/A') }} yrs</td>
+                        <td>₹{{ pet.Amount | default('N/A') }}</td>
+                        <!-- <td>{{ pet.DATE_LISTED.strftime('%Y-%m-%d') if pet.DATE_LISTED else 'N/A' }}</td> -->
+                        <td>
+                             {% if pet.adoption_status == 'Available' %}
+                                <span class="badge status-available">Available</span>
+                            {% elif pet.adoption_status == 'Pending' or pet.adoption_status == 'Underway' %}
+                                <span class="badge status-pending">Pending</span>
+                            {% elif pet.adoption_status == 'Adopted' or pet.adoption_status == 'Successful' %}
+                                <span class="badge status-adopted">Adopted</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ pet.adoption_status | default('Unknown') }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="pet-actions">
+                             <a href="#" class="btn btn-outline-primary btn-sm" title="Medical Info" data-toggle="modal" data-target="#medicalInfoModal" data-pet-id="{{ pet.PET_ID }}" data-pet-name="{{ pet.NAME }}">
+                                 <i class="fas fa-notes-medical"></i><span class="d-none d-lg-inline"> Medical</span>
+                             </a>
+                             <!-- <a href="#" class="btn btn-outline-secondary btn-sm" title="Edit Pet">
+                                 <i class="fas fa-edit"></i><span class="d-none d-lg-inline"> Edit</span>
+                             </a> -->
+                             <!-- <a href="{{ url_for('admin_view_adoptions') }}?pet_id={{ pet.PET_ID }}" class="btn btn-outline-info btn-sm" title="View Adoptions">
+                                 <i class="fas fa-clipboard-list"></i><span class="d-none d-lg-inline"> Adoptions</span>
+                             </a> -->
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="text-center p-4 no-pets-message">
+                <h4><i class="fas fa-search mr-2"></i>No Pets Found</h4>
+                <p>No pets match the current filters, or you haven't listed any pets yet.</p>
+                <a href="{{ url_for('admin_add_pet') }}" class="btn btn-primary mt-2">Add Your First Pet</a>
+            </div>
+        {% endif %}
+    </div>
+    {# Optional: Pagination if needed #}
+    <!--
+    <div class="card-footer text-muted">
+        Pagination Controls Here
+    </div>
+    -->
+</div>
+
+
+<!-- Medical Info Modal Placeholder (Keep this the same as before) -->
+<div class="modal fade" id="medicalInfoModal" tabindex="-1" aria-labelledby="medicalInfoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="medicalInfoModalLabel">Medical Information for <span id="modalPetNameMed">Pet</span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <!-- <p><i>Loading medical records...</i></p> -->
+         <div id="medicalRecordsContent">
+             <ul class="list-group">
+                 <li class="list-group-item"><strong>Vaccination Status:</strong> Up to date (Example)</li>
+                 <li class="list-group-item"><strong>Spayed/Neutered:</strong> Yes (Example)</li>
+                 <li class="list-group-item"><strong>Last Vet Visit:</strong> 2023-10-15 (Example)</li>
+                 <li class="list-group-item"><strong>Notes:</strong> Slightly allergic to dust mites. (Example)</li>
+             </ul>
+         </div>
+         <hr>
+         <h5>Add New Record</h5>
+         <form id="addMedicalRecordForm">
+             <input type="hidden" id="modalPetIdMed" name="pet_id">
+             <div class="form-group">
+                 <label for="record_type">Record Type</label>
+                 <select id="record_type" name="record_type" class="form-control form-control-sm">
+                     <option>Vaccination</option>
+                     <option>Check-up</option>
+                     <option>Medication</option>
+                     <option>Procedure</option>
+                     <option>Note</option>
+                 </select>
+             </div>
+              <div class="form-group">
+                 <label for="record_date">Date</label>
+                 <input type="date" id="record_date" name="record_date" class="form-control form-control-sm" required>
+             </div>
+              <div class="form-group">
+                 <label for="record_notes">Notes / Details</label>
+                 <textarea id="record_notes" name="record_notes" class="form-control form-control-sm" rows="2" required></textarea>
+             </div>
+             <button type="submit" class="btn btn-sm btn-primary">Add Record</button>
+         </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Basic JavaScript for Modal interaction
+    $('#medicalInfoModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var petId = button.data('pet-id'); // Extract pet ID
+        var petName = button.data('pet-name'); // Extract pet name
+
+        var modal = $(this);
+        modal.find('#modalPetNameMed').text(petName); // Set pet name in modal title
+        modal.find('#modalPetIdMed').val(petId); // Set hidden pet ID in form
+
+        var recordsContent = modal.find('#medicalRecordsContent');
+        // Set loading state
+        recordsContent.html('<div class="text-center p-3"><div class="spinner-border spinner-border-sm text-secondary" role="status"><span class="sr-only">Loading...</span></div> Fetching records...</div>');
+
+        // --- AJAX call to load existing medical records ---
+        $.ajax({
+            url: '/admin/get_medical_records/' + petId, // Your endpoint to fetch records
+            method: 'GET',
+            dataType: 'json', // Expect JSON response
+            success: function(response) {
+                // --- FIXED: Parse JSON and build HTML ---
+                if (response.records && Array.isArray(response.records) && response.records.length > 0) {
+                    var recordsHtml = '<ul class="list-group list-group-flush">';
+                    response.records.forEach(function(record) {
+                        // Safely access properties, provide defaults
+                        var treatment = record.TREATMENT || 'N/A';
+                        var recordDate = record.DATE || 'No Date';
+                        var medicine = record.MEDICINE || null; // Check if medicine exists
+                        var vetName = record.VET_NAME || 'N/A';
+
+                        recordsHtml += '<li class="list-group-item">';
+                        recordsHtml += '<div class="d-flex w-100 justify-content-between">';
+                        recordsHtml += '<h6 class="mb-1">' + treatment + '</h6>';
+                        recordsHtml += '<small class="text-muted">' + recordDate + '</small>';
+                        recordsHtml += '</div>';
+                        if (medicine) {
+                             recordsHtml += '<p class="mb-1 small"><strong>Medication:</strong> ' + medicine + '</p>';
+                        }
+                        recordsHtml += '<small class="text-muted">Vet: ' + vetName + '</small>';
+                         recordsHtml += '</li>';
+                    });
+                    recordsHtml += '</ul>';
+                    recordsContent.html(recordsHtml); // Update with formatted records
+                } else {
+                     // Handle case where 'records' array is empty or missing
+                    recordsContent.html('<p class="text-muted p-3 text-center">No medical records found for ' + petName + '.</p>');
+                }
+                // --- END FIX ---
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("AJAX Error fetching records:", textStatus, errorThrown, jqXHR.responseJSON);
+                var errorMsg = 'Could not load medical records.';
+                if(jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                    errorMsg += ' ' + jqXHR.responseJSON.error;
+                }
+                recordsContent.html('<p class="text-danger p-3 text-center">' + errorMsg + '</p>');
+            }
+        });
+         // --- End AJAX GET ---
+    });
+
+    // Handle form submission via AJAX for adding medical record
+    $('#addMedicalRecordForm').on('submit', function(event) {
+         event.preventDefault(); // Prevent default form submission
+         var form = $(this);
+         var formData = form.serialize(); // Get form data
+         var petId = $('#modalPetIdMed').val(); // Get pet ID again
+         var addButton = form.find('button[type="submit"]');
+
+         // Disable button to prevent multiple submits
+         addButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...');
+
+         // --- AJAX POST request to add medical record ---
+         $.ajax({
+            url: '/admin/add_medical_record/' + petId, // Your endpoint to add record
+            method: 'POST',
+            data: formData,
+            dataType: 'json', // Expect JSON response
+            success: function(response) {
+                // Use message from server response if available
+                alert(response.message || 'Medical record added successfully!');
+                // --- FIXED: Trigger modal show again to refresh records ---
+                // Find the original button that opened the modal to pass as relatedTarget
+                var originalButton = $('a[data-target="#medicalInfoModal"][data-pet-id="' + petId + '"]');
+                if (originalButton.length) {
+                    $('#medicalInfoModal').trigger('show.bs.modal', { relatedTarget: originalButton[0] });
+                } else {
+                    // Fallback if original button can't be found easily, just reload list manually
+                     $('#medicalInfoModal').find('#medicalRecordsContent').html('<p><i>Refreshing records...</i></p>'); // Indicate refresh
+                     // Re-fetch (duplicate code - consider making a function)
+                     $.ajax({
+                        url: '/admin/get_medical_records/' + petId, method: 'GET', dataType: 'json',
+                        success: function(refreshedResponse){ /* ... same success logic as above ... */
+                             if (refreshedResponse.records && Array.isArray(refreshedResponse.records) && refreshedResponse.records.length > 0) {
+                                 var recordsHtml = '<ul class="list-group list-group-flush">';
+                                 refreshedResponse.records.forEach(function(record) { /* ... build html ... */
+                                    var treatment = record.TREATMENT || 'N/A';
+                                    var recordDate = record.DATE || 'No Date';
+                                    var medicine = record.MEDICINE || null;
+                                    var vetName = record.VET_NAME || 'N/A';
+                                    recordsHtml += '<li class="list-group-item"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">' + treatment + '</h6><small class="text-muted">' + recordDate + '</small></div>';
+                                    if (medicine) { recordsHtml += '<p class="mb-1 small"><strong>Medication:</strong> ' + medicine + '</p>'; }
+                                    recordsHtml += '<small class="text-muted">Vet: ' + vetName + '</small></li>';
+                                 });
+                                 recordsHtml += '</ul>';
+                                 $('#medicalInfoModal').find('#medicalRecordsContent').html(recordsHtml);
+                             } else {
+                                 $('#medicalInfoModal').find('#medicalRecordsContent').html('<p class="text-muted p-3 text-center">No medical records found.</p>');
+                             }
+                        },
+                        error: function(){ $('#medicalInfoModal').find('#medicalRecordsContent').html('<p class="text-danger">Error refreshing records.</p>'); }
+                     });
+                }
+                // Clear the form fields after successful submission
+                form.trigger('reset');
+                // --- END FIX ---
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                 console.error("AJAX Error adding record:", textStatus, errorThrown, jqXHR.responseJSON);
+                 var errorMsg = 'Error adding medical record.';
+                 if(jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                     errorMsg += ' ' + jqXHR.responseJSON.error;
+                 }
+                 alert(errorMsg); // Show error message
+            },
+            complete: function() {
+                 // Re-enable button regardless of success/error
+                 addButton.prop('disabled', false).html('Add Record');
+            }
+         });
+         // --- End AJAX POST ---
+
+         // --- FIXED: Removed simulation alert ---
+         // alert('Medical record submission simulation (AJAX needed). Data: ' + formData);
+         // $('#medicalInfoModal').modal('hide'); // Don't hide immediately, wait for AJAX response
+         // --- END FIX ---
+    });
+</script>
+{% endblock %}

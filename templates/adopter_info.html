@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}Just One More Step! - Who's Your Pal?{% endblock %}
+
+{% block head_extra %}
+<style>
+    .info-card {
+        background-color: #fff;
+        border: 1px solid rgba(194, 166, 129, 0.4);
+    }
+    .info-card h2 .fa-info-circle {
+        color: #8D6E63;
+        font-size: 0.8em;
+        vertical-align: baseline;
+    }
+    .info-card .btn-success {
+         background-color: #5cb85c;
+         border-color: #4cae4c;
+         transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+     .info-card .btn-success:hover {
+         background-color: #449d44;
+         border-color: #398439;
+     }
+     .form-control:focus, .form-select:focus { /* Added form-select for BS5+ */
+         border-color: #c2a681;
+         box-shadow: 0 0 0 0.2rem rgba(194, 166, 129, 0.25);
+     }
+     /* Styling for BS4 Select Arrow */
+     .info-card .form-control {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        appearance: none;
+     }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow p-4 info-card">
+            <h2 class="text-center mb-3">
+                <i class="fas fa-info-circle mr-2"></i>Whoops! Almost There...
+            </h2>
+            <p class="text-center text-muted mb-4 small">
+                Our shelter partners need just a tiny bit more info before you can start the adoption process.
+                <br>(We forgot to ask during sign-up... our bad!)
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category or 'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            {# The form should POST back to the same /adopt/<pet_id> route #}
+            <form method="POST" action="{{ url_for('adopt_pet', pet_id=pet_id) }}">
+                <div class="form-group">
+                    <label for="age">Your Age</label>
+                    <input type="number" id="age" name="age" class="form-control" placeholder="How many trips around the sun?" min="18" required>
+                    <small class="form-text text-muted">You must be 18 or older to adopt.</small>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" class="form-control" required>
+                        <option value="" disabled selected>Select one...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Prefer not to say / Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success btn-block mt-4">Save Info & Continue Adoption</button>
+            </form>
+             <p class="text-center mt-3 small text-muted">
+                This info helps shelters match you with the right pal!
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

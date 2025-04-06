@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+
+{% block title %}Welcome to Who's Your Pal? - Find Your Friend{% endblock %}
+
+{% block head_extra %}
+<style>
+    .hero-section {
+        background: url('images/paw-print-background.webp') repeat center center; /* Subtle background */
+        background-color: rgba(252, 247, 229, 0.8); /* Overlay color from body bg */
+        background-blend-mode: overlay;
+        padding: 4rem 1rem;
+        margin-bottom: 3rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border: 1px solid rgba(194, 166, 129, 0.3); /* Subtle border matching navbar theme */
+    }
+    .hero-section h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #5D4037; /* Darker brown from layout theme */
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+    }
+    .hero-section .lead {
+        font-size: 1.3rem;
+        color: #6c757d; /* Muted color */
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .hero-section .btn-primary {
+        background-color: #8D6E63; /* Muted brown button */
+        border-color: #795548;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .hero-section .btn-primary:hover {
+        background-color: #5D4037; /* Darker brown on hover */
+        border-color: #4E342E;
+        transform: translateY(-2px);
+    }
+
+    .stats-section {
+        background-color: #ffffff;
+        padding: 2.5rem 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .stats-section h2 {
+        font-size: 2rem;
+        color: #c2a681; /* Lighter theme color */
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .stats-number {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #5D4037; /* Dark brown */
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+    .stats-icon {
+        font-size: 1.8rem;
+        color: #c2a681; /* Lighter theme color */
+        margin-bottom: 1rem;
+    }
+
+    .info-section {
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    .info-section .card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        height: 100%; /* Ensure cards in a row have same height */
+    }
+    .info-section .card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .info-section .card-title {
+        color: #8D6E63; /* Muted brown */
+        font-weight: 600;
+    }
+    .info-section .card-icon {
+         font-size: 2.5rem;
+         color: #c2a681; /* Lighter theme color */
+         margin-bottom: 1rem;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+
+    <div class="hero-section">
+        <div class="container">
+            <h1>Your New Best Friend is Waiting!</h1>
+            <p class="lead">
+                Open your heart and home to unconditional love. Browse hundreds of adorable pets from local shelters,
+                ready to start their forever journey with you.
+            </p>
+            <a href="/pets" class="btn btn-primary btn-lg mt-2">
+                <i class="fas fa-paw mr-2"></i>Find Your Pal
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-section">
+            <div class="stats-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h2>Paws Made Happy So Far!</h2>
+            <div class="stats-number">
+                {{ total_adoptions | default('1,234+', true) }}
+            </div>
+            <p class="text-muted mb-0">Animals who found their loving forever homes through Who's Your Pal?</p>
+        </div>
+
+        <div class="info-section">
+            <h2 class="text-center mb-4" style="color: #5D4037;">Why Choose Adoption?</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center p-4">
+                         <div class="card-icon"><i class="fas fa-home"></i></div>
+                        <div class="card-body">
+                            <h5 class="card-title">Save a Life</h5>
+                            <p class="card-text small text-muted">Each adoption makes space for another animal in need at the shelter.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                     <div class="card text-center p-4">
+                          <div class="card-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                        <div class="card-body">
+                            <h5 class="card-title">Find Unconditional Love</h5>
+                            <p class="card-text small text-muted">Adopted pets often show immense gratitude and form incredibly strong bonds.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-4 mb-4">
+                     <div class="card text-center p-4">
+                          <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="card-body">
+                            <h5 class="card-title">Cost-Effective</h5>
+                            <p class="card-text small text-muted">Adoption fees are much lower than buying and usually include initial vet care.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="how-it-works text-center mb-5 pb-3">
+             <h2 class="mb-4" style="color: #5D4037;">Ready to Start? It's Easy!</h2>
+             <div class="row justify-content-center">
+                 <div class="col-md-3 text-muted">
+                     <i class="fas fa-search fa-2x mb-2" style="color: #c2a681;"></i><br>
+                     <strong>1. Browse Pets</strong><br>
+                     Filter by species, breed, age & more.
+                 </div>
+                  <div class="col-md-1 text-muted align-self-center d-none d-md-block">
+                     <i class="fas fa-arrow-right fa-lg"></i>
+                 </div>
+                 <div class="col-md-3 text-muted">
+                     <i class="fas fa-file-alt fa-2x mb-2" style="color: #c2a681;"></i><br>
+                     <strong>2. View Details</strong><br>
+                      Learn about their personality & needs.
+                 </div>
+                  <div class="col-md-1 text-muted align-self-center d-none d-md-block">
+                     <i class="fas fa-arrow-right fa-lg"></i>
+                 </div>
+                  <div class="col-md-3 text-muted">
+                     <i class="fas fa-handshake fa-2x mb-2" style="color: #c2a681;"></i><br>
+                     <strong>3. Connect & Adopt</strong><br>
+                      Contact the shelter to meet your match!
+                 </div>
+             </div>
+             <a href="/pets" class="btn btn-outline-secondary btn-lg mt-4">Let's Find My Friend!</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %} 

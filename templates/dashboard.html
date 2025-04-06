@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+
+{% block title %}Your Dashboard - Who's Your Pal?{% endblock %}
+
+{% block head_extra %}
+<style>
+    .dashboard-sidebar .list-group-item {
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        border-bottom: 1px solid rgba(194, 166, 129, 0.2);
+        color: #5D4037; /* Dark theme brown */
+        transition: background-color 0.2s ease, border-left 0.2s ease;
+    }
+    .dashboard-sidebar .list-group-item.active,
+    .dashboard-sidebar .list-group-item:hover {
+        background-color: #fcf7e5; /* Body background color */
+        color: #5D4037;
+        border-left: 4px solid #c2a681; /* Theme accent */
+        font-weight: 500;
+    }
+     .dashboard-sidebar .list-group-item.active {
+         border-color: #c2a681; /* Ensure active border color matches hover */
+         background-color: #f8f1da; /* Slightly different active background */
+     }
+    .dashboard-sidebar .list-group-item i {
+        margin-right: 0.75rem;
+        width: 20px; /* Ensure icons align */
+        text-align: center;
+        color: #8D6E63; /* Muted brown */
+    }
+     .dashboard-sidebar .list-group-item.active i,
+     .dashboard-sidebar .list-group-item:hover i {
+         color: #5D4037;
+     }
+
+    .stat-card {
+         background-color: #fff;
+         border: 1px solid rgba(194, 166, 129, 0.3);
+         transition: transform 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+    .stat-card h5 {
+         color: #8D6E63; /* Muted brown */
+         font-size: 1rem;
+         margin-bottom: 0.5rem;
+         text-transform: uppercase;
+         letter-spacing: 0.5px;
+    }
+    .stat-card .display-4 {
+        color: #5D4037; /* Dark brown */
+        font-weight: 600;
+    }
+    .main-content h2, .main-content h4 {
+        color: #5D4037;
+    }
+     .list-group-item {
+         background-color: #fff; /* Ensure list items have white bg */
+     }
+     .list-group-item .badge {
+         font-size: 0.8em;
+         padding: 0.4em 0.6em;
+     }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-3 dashboard-sidebar">
+        <div class="list-group sticky-top">
+            <a href="/dashboard" class="list-group-item list-group-item-action active">
+                <i class="fas fa-tachometer-alt"></i>Dashboard Home
+            </a>
+            <!-- <a href="/profile" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-circle"></i>My Profile
+            </a> -->
+            <a href="/my-pets" class="list-group-item list-group-item-action">
+                <i class="fas fa-heart"></i>My Happy Paws
+            </a>
+             <!-- <a href="/my-listings" class="list-group-item list-group-item-action"> {# Example: If user can list pets #}
+                 <i class="fas fa-list-ul"></i>My Listings
+             </a> -->
+            <a href="/logout" class="list-group-item list-group-item-action">
+                <i class="fas fa-sign-out-alt"></i>Log Out
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9 main-content">
+        <h2 class="mb-4">Welcome Back, {{ current_user.username }}!</h2>
+        <p class="text-muted mb-4">Here's a quick peek at your Pal-related activity.</p>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center p-3 stat-card">
+                    <h5>Paws You've Helped</h5>
+                    <p class="display-4">{{ adopted_pets_count | default(0) }}</p>
+                    <a href="/my-pets" class="btn btn-sm btn-outline-secondary mt-2">View My Pets</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center p-3 stat-card">
+                    <h5>Under Process</h5>
+                    <p class="display-4">{{ under_process_count | default(0) }}</p> {# Example stat #}
+                </div>
+            </div>
+            <!--
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center p-3 stat-card">
+                    <h5>Messages</h5>
+                    <p class="display-4">{{ unread_messages_count | default(0) }}</p> {# Example stat #}
+                     <a href="/messages" class="btn btn-sm btn-outline-secondary mt-2">Check Messages</a> {# Example link #}
+                </div>
+            </div> -->
+        </div>
+
+        <div class="mt-4">
+            <h4>Your Recent Adoption Activity</h4>
+            {% if recent_adoptions %}
+                <ul class="list-group shadow-sm">
+                    {% for adoption in recent_adoptions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ adoption.NAME }}</strong> ({{ adoption.BREED }})
+                            <small class="d-block text-muted">Applied on: {{ adoption.application_date.strftime('%Y-%m-%d') if adoption.application_date else 'N/A' }}</small>
+                        </div>
+
+                        {% if adoption.STATUS == "Accepted" or adoption.STATUS == "Successful" %}
+                            <span class="badge badge-success badge-pill"><i class="fas fa-check-circle mr-1"></i>Accepted</span>
+                        {% elif adoption.STATUS == "Pending" or adoption.STATUS == "Underway" %}
+                            <span class="badge badge-warning badge-pill"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>
+                        {% elif adoption.STATUS == "Rejected" or adoption.STATUS == "Cancelled" %}
+                            <span class="badge badge-danger badge-pill"><i class="fas fa-times-circle mr-1"></i>Rejected</span>
+                        {% else %}
+                            <span class="badge badge-secondary badge-pill">{{ adoption.STATUS | default('Unknown') }}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+             {% else %}
+                <div class="alert alert-light text-center" role="alert">
+                    No recent adoption activity found. <a href="/pets">Find a new friend today!</a>
+                </div>
+             {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

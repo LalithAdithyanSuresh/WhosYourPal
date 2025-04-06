@@ -1,0 +1,35 @@
+{% extends "admin/admin_layout.html" %}
+
+{% block title %}Shelter Login{% endblock %}
+
+{% block head_extra %}
+<style>
+    body { background-color: #e9ecef; } /* Slightly different background for login */
+    .login-container { max-width: 450px; margin-top: 5rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container login-container">
+    <div class="card shadow-sm p-4">
+         <div class="text-center mb-4">
+             <img src="{{ url_for('static', filename='icon/WhosYourPal_Trans_WhiteLine.png') }}" alt="WYP Logo" width="70px" height="70px"/>
+             <h2 class="mt-2">Shelter Admin Login</h2>
+             <p class="text-muted small">Access your shelter's dashboard</p>
+         </div>
+
+        <form method="POST" action="{{ url_for('admin_login') }}">
+             {{ form.hidden_tag() if form and form.hidden_tag }}
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Enter admin email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

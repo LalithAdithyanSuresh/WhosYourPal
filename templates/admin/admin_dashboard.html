@@ -1,0 +1,68 @@
+{% extends "admin/admin_layout.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block head_extra %}
+<style>
+    .stat-card {
+        border-left: 5px solid #8D6E63; /* Theme color accent */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .stat-card .card-body { padding: 1.5rem; }
+    .stat-card h5 { color: #5D4037; font-weight: 600; margin-bottom: 0.25rem;}
+    .stat-card p.display-4 { color: #8D6E63; font-weight: 700;}
+    .stat-card a { color: #5D4037; font-weight: 500; font-size: 0.9em;}
+    .quick-links .btn { margin-right: 0.5rem; margin-bottom: 0.5rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Shelter Dashboard</h2>
+<p class="lead text-muted mb-4">Overview of your shelter's activity on Who's Your Pal?</p>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm stat-card">
+            <div class="card-body text-center">
+                <h5><i class="fas fa-clipboard-check mr-2"></i>Pending Adoptions</h5>
+                <p class="display-4">{{ pending_adoptions_count | default(0) }}</p>
+                <a href="{{ url_for('admin_view_adoptions') }}">View Requests <i class="fas fa-arrow-right ml-1"></i></a>
+            </div>
+        </div>
+    </div>
+     <div class="col-md-4 mb-3">
+        <div class="card shadow-sm stat-card">
+            <div class="card-body text-center">
+                <h5><i class="fas fa-paw mr-2"></i>Pets Listed</h5>
+                <p class="display-4">{{ listed_pets_count | default(0) }}</p>
+                <a href="{{ url_for('admin_my_listings') }}">View Your Pets <i class="fas fa-arrow-right ml-1"></i></a> {# Link to a future 'manage pets' page #}
+            </div>
+        </div>
+    </div>
+     <div class="col-md-4 mb-3">
+        <div class="card shadow-sm stat-card">
+            <div class="card-body text-center">
+                <h5><i class="fas fa-home mr-2"></i>Total Adopted (Your Shelter)</h5>
+                <p class="display-4">{{ total_adopted_count | default(0) }}</p>
+                 <a href="{{ url_for('admin_view_adoptions') }}?status=Successful">View Completed <i class="fas fa-arrow-right ml-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card quick-links">
+    <div class="card-header">
+        Quick Actions
+    </div>
+    <div class="card-body">
+        <a href="{{ url_for('admin_add_pet') }}" class="btn btn-primary"><i class="fas fa-plus-circle mr-1"></i> Add New Pet</a>
+        <a href="{{ url_for('admin_view_adoptions') }}" class="btn btn-outline-secondary"><i class="fas fa-clipboard-list mr-1"></i> Manage Adoption Requests</a>
+         <a href="#" class="btn btn-outline-secondary"><i class="fas fa-edit mr-1"></i> Edit Shelter Info</a> {# Future link #}
+    </div>
+</div>
+
+{% endblock %}

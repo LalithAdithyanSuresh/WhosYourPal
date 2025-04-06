@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block title %}Join the Pack! - Who's Your Pal?{% endblock %}
+
+{% block head_extra %}
+<style>
+    .register-card {
+        background-color: #fff;
+        border: 1px solid rgba(194, 166, 129, 0.4);
+    }
+    .register-card h2 .fa-user-plus {
+        color: #8D6E63;
+        font-size: 0.8em;
+        vertical-align: baseline;
+    }
+    .register-card .btn-success {
+         background-color: #5cb85c; /* Standard success green */
+         border-color: #4cae4c;
+         /* Or use a theme color if preferred:
+         background-color: #8D6E63;
+         border-color: #795548; */
+         transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+     .register-card .btn-success:hover {
+         background-color: #449d44;
+         border-color: #398439;
+         /* Or darker theme color:
+         background-color: #5D4037;
+         border-color: #4E342E; */
+     }
+     .form-control:focus {
+         border-color: #c2a681;
+         box-shadow: 0 0 0 0.2rem rgba(194, 166, 129, 0.25);
+     }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow p-4 register-card">
+            <h2 class="text-center mb-3">
+                <i class="fas fa-user-plus mr-2"></i>Join Our Awesome Pack!
+            </h2>
+            <p class="text-center text-muted mb-4 small">Ready to find (or list) a furry friend? Let's get you set up!</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category or 'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+                 {{ form.hidden_tag() if form and form.hidden_tag }}
+                <div class="form-group">
+                    <label for="username">Choose Your Pack Name (Username)</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="e.g., BestDogDad_88" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address (Where we send virtual treats)</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Create a Secret Handshake (Password)</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Make it strong! At least 6 characters" required>
+                </div>
+
+                {% if not form or not form.submit %}
+                 <button type="submit" class="btn btn-success btn-block mt-4">Register Me!</button>
+                {% endif %}
+            </form>
+            <hr>
+            <p class="text-center mt-2 mb-0 small">
+                Already got your collar? <a href="{{ url_for('login') }}">Log In Here!</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

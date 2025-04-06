@@ -1,0 +1,415 @@
+{% extends "layout.html" %}
+
+{% block head_extra %}
+<style>
+    .filter-card .card-header {
+        background-color: #e9ecef;
+        border-bottom: 1px solid #dee2e6;
+        cursor: pointer; /* Indicate the header is clickable */
+    }
+    .filter-card .card-header h5 span {
+        user-select: none; /* Prevent text selection on header */
+    }
+    .filter-card .form-label {
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+        font-size: 0.9em;
+        color: #495057;
+    }
+    .filter-card .form-control-sm {
+        font-size: 0.875rem;
+        border-radius: 0.2rem;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 16px 12px;
+        padding-right: 1.75rem;
+        appearance: none;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    .filter-card .form-control-sm:focus {
+         border-color: #86b7fe;
+         outline: 0;
+         box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    .filter-card .btn-sm {
+        font-size: 0.875rem;
+    }
+    .filter-card .filter-group-title {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 0.8rem;
+        font-size: 1em;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #ced4da;
+    }
+     .filter-card .form-check-label.small {
+         font-size: 0.85em;
+     }
+     /* Style for the collapse toggle icon */
+     .filter-toggle-icon::before {
+        content: "\f077"; /* Font Awesome Angle Up */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        transition: transform 0.35s ease;
+        display: inline-block;
+     }
+    .filter-card .card-header[aria-expanded="false"] .filter-toggle-icon::before {
+         transform: rotate(180deg); /* Rotate to Angle Down when collapsed */
+     }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Find Your Perfect Companion</h1>
+
+    <div class="card shadow-sm mb-4 filter-card">
+        <div class="card-header" id="filterHeader" data-toggle="collapse" data-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+            <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-filter mr-2"></i>Filter & Sort</span>
+                <span class="filter-toggle-icon ml-2"></span>
+            </h5>
+        </div>
+
+        <div class="collapse" id="filterCollapse" aria-labelledby="filterHeader">
+            <div class="card-body p-4">
+                 <div class="row gx-3 gy-3">
+
+                    <div class="col-lg-9 col-md-12">
+                         <h6 class="filter-group-title">Filter By Attributes</h6>
+                         <div class="row gx-3 gy-3">
+                             <div class="col-lg-4 col-md-6">
+                                <label for="speciesFilter" class="form-label">Species:</label>
+                                <select id="speciesFilter" class="form-control form-control-sm">
+                                    <option value="">All Species</option>
+                                    {% for species in species_list %}
+                                        <option value="{{ species }}">{{ species }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                                <label for="breedFilter" class="form-label">Breed:</label>
+                                <select id="breedFilter" class="form-control form-control-sm">
+                                    <option value="">All Breeds</option>
+                                </select>
+                            </div>
+                             <div class="col-lg-4 col-md-6">
+                                <label for="colorFilter" class="form-label">Color:</label>
+                                <select id="colorFilter" class="form-control form-control-sm">
+                                    <option value="">All Colors</option>
+                                    {% for color in color_list %}
+                                        <option value="{{ color }}">{{ color }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                                <label for="ageFilter" class="form-label">Age:</label>
+                                <select id="ageFilter" class="form-control form-control-sm">
+                                    <option value="">All Ages</option>
+                                    {% for age in age_list %}
+                                        <option value="{{ age }}">{{ age }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                         </div>
+
+                         <h6 class="filter-group-title mt-4">Filter By Shelter</h6>
+                         <div class="row gx-3 gy-2">
+                             {% for shelter in shelter_list %}
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input shelterFilter"
+                                                value="{{ shelter }}"
+                                                id="shelter{{ loop.index }}">
+                                        <label class="form-check-label small" for="shelter{{ loop.index }}">{{ shelter }}</label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                         </div>
+                    </div>
+
+                     <div class="col-lg-3 col-md-12 border-lg-left pl-lg-4 mt-4 mt-lg-0">
+                         <h6 class="filter-group-title">Sort & Actions</h6>
+                          <div class="mb-3">
+                            <label for="sortOrder" class="form-label">Sort by Fee:</label>
+                            <select id="sortOrder" class="form-control form-control-sm">
+                                <option value="default">Default</option>
+                                <option value="amount_asc">Fee: Low to High</option>
+                                <option value="amount_desc">Fee: High to Low</option>
+                            </select>
+                        </div>
+                         <button type="button" class="btn btn-primary btn-sm w-100 mb-2" onclick="applyFilters()">Apply Filters & Sort</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilters()">Reset All</button>
+                     </div>
+
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-4">Available Pets</h2>
+
+    <div class="row row-cols-1 row-cols-lg-2 g-4" id="pet-grid">
+        {% if dogs %}
+            {% for dog in dogs %}
+            <div class="col pet-card"
+                data-species="{{ dog['SPECIES'] }}"
+                data-breed="{{ dog['BREED'] }}"
+                data-age="{{ dog['AGE'] }}"
+                data-shelter="{{ dog['SHELTER_NAME'] }}"
+                data-color="{{ dog['COLOR'] }}"
+                data-pet-amount="{{ dog['Amount'] }}"
+                data-pet-id="{{ dog['PET_ID'] }}"
+                data-pet-name="{{ dog['NAME'] }}"
+                data-pet-height="{{ dog['HEIGHT'] | default('N/A', true) }}"
+                data-pet-weight="{{ dog['WEIGHT'] | default('N/A', true) }}"
+                data-shelter-id="{{ dog['SHELTER_ID'] }}"
+                >
+
+                <div class="card shadow-sm h-100 d-flex flex-row align-items-center p-3">
+                     <img src="https://robohash.org/{{ dog['NAME'] | urlencode }}?set=set4&size=100x100"
+                         class="img-thumbnail flex-shrink-0"
+                         alt="{{ dog['NAME'] }}" style="width: 100px; height: 100px; object-fit: cover;" />
+                    <div class="card-body py-0 ps-3">
+                        <h5 class="card-title mb-1">{{ dog['NAME'] }}</h5>
+                        <p class="card-text small mb-2">
+                            <strong>Species:</strong> {{ dog['SPECIES'] }}
+                            <strong> | Breed:</strong> {{ dog['BREED'] }} <br />
+                            <strong>Color:</strong> {{ dog['COLOR'] }}
+                            <strong> | Age:</strong> {{ dog['AGE'] }} <br />
+                            <strong>Shelter:</strong> {{ dog['SHELTER_NAME'] }} <br>
+                            <strong class="text-success">Fee: ₹{{ dog['Amount'] }}</strong>
+                        </p>
+                        <div class="mt-2">
+                             <!-- <button type="button" class="btn btn-outline-primary btn-sm me-1 btn-view-details" data-toggle="modal" data-target="#petDetailModal">Details</button> -->
+                             <a href="/pet/{{ dog['PET_ID'] }}" class="btn btn-outline-primary btn-sm me-1 btn-view-details" target="_blank">Details</a>
+                             <a href="/shelter/{{ dog['SHELTER_ID'] }}" class="btn btn-outline-info btn-sm me-1" target="_blank">Shelter</a>
+                             <a href="/adopt/{{ dog['PET_ID'] }}" class="btn btn-success btn-sm">Adopt</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p class="text-center text-muted alert alert-info">No pets are currently listed. Please check back later!</p>
+            </div>
+        {% endif %}
+         <div class="col-12 d-none" id="no-results">
+             <p class="text-center alert alert-warning">No pets match the selected filters.</p>
+         </div>
+    </div>
+</div>
+
+{# {% include 'partials/_pet_detail_modal.html' %} #}
+
+<script>
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const breedFilter = document.getElementById('breedFilter');
+    const speciesFilter = document.getElementById('speciesFilter');
+    const ageFilter = document.getElementById('ageFilter');
+    const colorFilter = document.getElementById('colorFilter');
+    const shelterCheckboxes = document.querySelectorAll('.shelterFilter');
+    const sortOrder = document.getElementById('sortOrder');
+    const petGrid = document.getElementById('pet-grid');
+    const noResultsDiv = document.getElementById('no-results');
+
+    const allPetCardCols = Array.from(petGrid.querySelectorAll('.pet-card'));
+
+    speciesFilter.addEventListener('change', handleSpeciesChange);
+    breedFilter.addEventListener('change', applyFilters);
+    ageFilter.addEventListener('change', applyFilters);
+    colorFilter.addEventListener('change', applyFilters);
+    sortOrder.addEventListener('change', applyFilters);
+    shelterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
+    });
+
+    function handleSpeciesChange() {
+        let selectedSpecies = speciesFilter.value;
+        let currentBreed = breedFilter.value;
+
+        breedFilter.innerHTML = '<option value="">All Breeds</option>';
+
+        if (selectedSpecies) {
+            let uniqueBreeds = new Set();
+            allPetCardCols.forEach(cardCol => {
+                let cardSpecies = cardCol.dataset.species?.trim().toLowerCase();
+                let cardBreed = cardCol.dataset.breed?.trim();
+                if (cardSpecies === selectedSpecies.trim().toLowerCase() && cardBreed) {
+                    uniqueBreeds.add(cardBreed);
+                }
+            });
+            Array.from(uniqueBreeds).sort().forEach(breed => {
+                let option = document.createElement('option');
+                option.value = breed;
+                option.textContent = breed;
+                if (breed === currentBreed) {
+                    option.selected = true;
+                }
+                breedFilter.appendChild(option);
+            });
+        } else {
+            populateAllBreeds(currentBreed);
+        }
+        applyFilters();
+    }
+
+    function populateAllBreeds(selectedBreed = null) {
+         let allBreeds = new Set();
+         allPetCardCols.forEach(cardCol => {
+             let breed = cardCol.dataset.breed?.trim();
+             if (breed) allBreeds.add(breed);
+         });
+         Array.from(allBreeds).sort().forEach(breed => {
+             let option = document.createElement('option');
+             option.value = breed;
+             option.textContent = breed;
+             if (breed === selectedBreed) {
+                 option.selected = true;
+             }
+             breedFilter.appendChild(option);
+         });
+    }
+
+    function applyFilters() {
+        let species = speciesFilter.value;
+        let breed = breedFilter.value;
+        let age = ageFilter.value;
+        let color = colorFilter.value;
+        let selectedShelters = Array.from(document.querySelectorAll('.shelterFilter:checked')).map(cb => cb.value);
+        let currentSortOrder = sortOrder.value;
+
+        let matchFound = false;
+        let visibleCards = [];
+
+        allPetCardCols.forEach(cardCol => {
+            let cardSpecies = cardCol.dataset.species || '';
+            let cardBreed = cardCol.dataset.breed || '';
+            let cardAge = cardCol.dataset.age || '';
+            let cardColor = cardCol.dataset.color || '';
+            let cardShelter = cardCol.dataset.shelter || '';
+
+            let match = true;
+            if (species && cardSpecies !== species) match = false;
+            if (breed && cardBreed !== breed) match = false;
+            if (age && cardAge !== age) match = false;
+            if (color && cardColor !== color) match = false;
+            if (selectedShelters.length > 0 && !selectedShelters.includes(cardShelter)) match = false;
+
+            cardCol.style.display = match ? '' : 'none';
+            if (match) {
+                matchFound = true;
+                visibleCards.push(cardCol);
+            }
+        });
+
+        if (currentSortOrder !== 'default' && visibleCards.length > 1) {
+            visibleCards.sort((a, b) => {
+                let amountA = parseFloat(a.dataset.petAmount) || 0;
+                let amountB = parseFloat(b.dataset.petAmount) || 0;
+
+                if (currentSortOrder === 'amount_asc') {
+                    return amountA - amountB;
+                } else if (currentSortOrder === 'amount_desc') {
+                    return amountB - amountA;
+                }
+                return 0;
+            });
+
+            while (petGrid.firstChild) {
+                petGrid.removeChild(petGrid.firstChild);
+            }
+            visibleCards.forEach(card => petGrid.appendChild(card));
+
+        } else if (visibleCards.length > 0) {
+
+        }
+
+        noResultsDiv.classList.toggle('d-none', matchFound);
+    }
+
+    function clearFilters() {
+        speciesFilter.value = "";
+        breedFilter.innerHTML = '<option value="">All Breeds</option>';
+        populateAllBreeds();
+        ageFilter.value = "";
+        colorFilter.value = "";
+        sortOrder.value = "default";
+        shelterCheckboxes.forEach(cb => cb.checked = false);
+        applyFilters();
+
+        // Ensure the collapse section is shown when resetting
+        $('#filterCollapse').collapse('show');
+        // Manually set aria-expanded on header if needed, though BS usually handles it
+        // $('#filterHeader').attr('aria-expanded', 'true');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!speciesFilter.value) {
+           populateAllBreeds();
+        }
+    });
+
+    $('#petDetailModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const card = button.closest('.pet-card');
+
+        const petId = card.data('petId') || card.attr('data-pet-id');
+        const name = card.data('petName') || card.attr('data-pet-name');
+        const species = card.data('petSpecies') || card.attr('data-pet-species');
+        const breed = card.data('petBreed') || card.attr('data-pet-breed');
+        const color = card.data('color') || card.attr('data-color');
+        const age = card.data('petAge') || card.attr('data-pet-age');
+        const height = card.data('petHeight') || card.attr('data-pet-height');
+        const weight = card.data('petWeight') || card.attr('data-pet-weight');
+        const shelterName = card.data('shelterName') || card.attr('data-shelter-name');
+        const shelterId = card.data('shelterId') || card.attr('data-shelter-id');
+        const amount = card.data('petAmount') || card.attr('data-pet-amount');
+
+        const imageUrl = `https://robohash.org/${encodeURIComponent(name)}?set=set4&size=200x200`;
+        const shelterUrl = `/shelter/${shelterId}`;
+        const adoptUrl = `/adopt/${petId}`;
+
+        const modal = $(this);
+        modal.find('.modal-title').text(`${name} - Details`);
+        modal.find('#modalPetImage').attr('src', imageUrl).attr('alt', name);
+        modal.find('#modalPetName').text(name);
+        modal.find('#modalPetSpecies').text(species);
+        modal.find('#modalPetBreed').text(breed);
+        modal.find('#modalPetColor').text(color);
+        modal.find('#modalPetAge').text(age);
+        modal.find('#modalPetHeight').text(height);
+        modal.find('#modalPetWeight').text(weight);
+        modal.find('#modalShelterName').text(shelterName);
+        modal.find('#modalShelterLink').attr('href', shelterUrl);
+        modal.find('#modalPetAmount').text(amount);
+        modal.find('#modalAdoptLink').attr('href', adoptUrl);
+    });
+
+    // Optional: Update header aria-expanded attribute explicitly on collapse events
+    // This ensures screen readers are correctly informed.
+    $('#filterCollapse').on('shown.bs.collapse', function () {
+        $('#filterHeader').attr('aria-expanded', 'true');
+    });
+    $('#filterCollapse').on('hidden.bs.collapse', function () {
+         $('#filterHeader').attr('aria-expanded', 'false');
+    });
+
+
+</script>
+{% endblock %}

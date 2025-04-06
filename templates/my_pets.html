@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+
+{% block title %}My Happy Paws - Who's Your Pal?{% endblock %}
+
+{% block head_extra %}
+<style>
+    .dashboard-sidebar .list-group-item {
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        border-bottom: 1px solid rgba(194, 166, 129, 0.2);
+        color: #5D4037;
+        transition: background-color 0.2s ease, border-left 0.2s ease;
+    }
+    /* Style for the active link in the sidebar */
+    .dashboard-sidebar .list-group-item[href="/my-pets"].active,
+    .dashboard-sidebar .list-group-item[href="/my-pets"]:hover {
+        background-color: #f8f1da; /* Slightly different active background */
+        color: #5D4037;
+        border-left: 4px solid #c2a681; /* Theme accent */
+        font-weight: 500;
+    }
+     /* Hover for non-active items */
+    .dashboard-sidebar .list-group-item:not(.active):hover {
+         background-color: #fcf7e5;
+         border-left: 4px solid #e0d4c3; /* Lighter accent on hover */
+    }
+    .dashboard-sidebar .list-group-item i {
+        margin-right: 0.75rem;
+        width: 20px;
+        text-align: center;
+        color: #8D6E63;
+    }
+     .dashboard-sidebar .list-group-item.active i,
+     .dashboard-sidebar .list-group-item:hover i {
+         color: #5D4037;
+     }
+
+    .main-content h2, .main-content h4 {
+        color: #5D4037;
+    }
+
+    .pet-adopted-card {
+        border: 1px solid #e0d4c3;
+        transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+        background-color: #fff;
+        height: 100%; /* Ensure cards align height */
+    }
+    .pet-adopted-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+    .pet-adopted-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+    .pet-adopted-card .card-body {
+         padding: 1rem;
+    }
+    .pet-adopted-card .card-title {
+        color: #5D4037;
+        font-weight: 600;
+    }
+    .pet-adopted-card .card-subtitle {
+        color: #8D6E63;
+    }
+    .pet-adopted-card .adoption-date {
+        font-size: 0.85em;
+        color: #6c757d;
+    }
+    .empty-state {
+        background-color: #fff;
+        padding: 3rem;
+        border-radius: 0.5rem;
+        border: 1px dashed #c2a681;
+        color: #6c757d;
+    }
+    .empty-state i {
+        font-size: 3rem;
+        color: #e0d4c3;
+        margin-bottom: 1rem;
+    }
+    .empty-state a {
+        color: #8D6E63;
+        font-weight: 500;
+    }
+    .empty-state a:hover {
+         color: #5D4037;
+         text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-3 dashboard-sidebar">
+        <div class="list-group sticky-top">
+            <a href="/dashboard" class="list-group-item list-group-item-action">
+                <i class="fas fa-tachometer-alt"></i>Dashboard Home
+            </a>
+            <!-- <a href="/profile" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-circle"></i>My Profile
+            </a> -->
+            <a href="/my-pets" class="list-group-item list-group-item-action active">
+                <i class="fas fa-heart"></i>My Happy Paws
+            </a>
+            <!-- <a href="/my-listings" class="list-group-item list-group-item-action">
+                 <i class="fas fa-list-ul"></i>My Listings
+             </a> -->
+            <a href="/logout" class="list-group-item list-group-item-action">
+                <i class="fas fa-sign-out-alt"></i>Log Out
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9 main-content">
+        <h2 class="mb-4">Meet Your Adopted Pals!</h2>
+        <p class="text-muted mb-4">A gallery of the wonderful companions you've given a forever home.</p>
+
+        {% if adopted_pets %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for pet in adopted_pets %}
+                    <div class="col">
+                        <div class="card pet-adopted-card shadow-sm">
+                            <img src="https://robohash.org/{{ pet.NAME | urlencode }}?set=set4&size=300x200"
+                                 class="card-img-top"
+                                 alt="{{ pet.NAME }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ pet.NAME }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ pet.BREED }} ({{ pet.SPECIES }})</h6>
+                                <p class="card-text small">
+                                    {# You might add other relevant info here if available #}
+                                    <strong>Color:</strong> {{ pet.COLOR | default('N/A') }} <br>
+                                    <strong>Age When Adopted:</strong> {{ pet.AGE_AT_ADOPTION | default('N/A') }} yrs
+                                </p>
+                                <p class="adoption-date mt-3 mb-0">
+                                    <i class="fas fa-calendar-check mr-1"></i>Adopted on: {{ pet.ADOPTION_DATE.strftime('%B %d, %Y') if pet.ADOPTION_DATE else 'Date Unknown' }}
+                                </p>
+                                {# Optional: Link back to original profile or a future 'story' page #}
+                                <!--
+                                <a href="/pet/{{ pet.PET_ID }}" class="btn btn-sm btn-outline-primary mt-2">View Profile</a>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center empty-state">
+                 <i class="fas fa-paw"></i>
+                <h4>Your Pack is Waiting for New Members!</h4>
+                <p>You haven't adopted any pals through our platform yet. Ready to change a life (and yours)?</p>
+                <a href="/pets" class="btn btn-primary mt-2" style="background-color: #8D6E63; border-color: #795548;">Find Your Next Best Friend</a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

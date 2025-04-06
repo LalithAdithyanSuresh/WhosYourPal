@@ -1,0 +1,101 @@
+{% extends "admin/admin_layout.html" %}
+
+{% block title %}Add New Pet{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Add a New Pal to Your Shelter</h2>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        Pet Details
+    </div>
+    <div class="card-body p-4">
+        <form method="POST" action="{{ url_for('admin_add_pet') }}" enctype="multipart/form-data">
+            {{ form.hidden_tag() if form and form.hidden_tag }} {# CSRF token #}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">Pet's Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Captain Fluffernutter" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                     <div class="form-group">
+                        <label for="species">Species</label>
+                        <select id="species" name="species" class="form-control" required>
+                            <option value="" disabled selected>Select Species...</option>
+                            <option value="Dog">Dog</option>
+                            <option value="Cat">Cat</option>
+                            <option value="Rabbit">Rabbit</option>
+                            <option value="Bird">Bird</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="breed">Breed</label>
+                        <input type="text" id="breed" name="breed" class="form-control" placeholder="e.g., Domestic Shorthair, Golden Doodle" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="color">Color(s)</label>
+                        <input type="text" id="color" name="color" class="form-control" placeholder="e.g., Black/White, Tabby, Tricolor" required>
+                    </div>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-4">
+                     <div class="form-group">
+                        <label for="age">Age (Years)</label>
+                        <input type="number" id="age" name="age" class="form-control" placeholder="Approximate age in years" min="0" step="0.1" required>
+                    </div>
+                </div>
+                 <div class="col-md-4">
+                     <div class="form-group">
+                        <label for="height">Height (cm)</label>
+                        <input type="number" id="height" name="height" class="form-control" placeholder="Optional" min="0" step="1">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="weight">Weight (Kg)</label>
+                        <input type="number" id="weight" name="weight" class="form-control" placeholder="Optional" min="0" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+             <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="3" placeholder="Tell us about their personality, needs, history..."></textarea>
+            </div>
+
+             <div class="row">
+                 <div class="col-md-6">
+                     <div class="form-group">
+                        <label for="amount">Adoption Fee (₹)</label>
+                        <input type="number" id="amount" name="amount" class="form-control" placeholder="e.g., 150" min="0" step="1" required>
+                    </div>
+                 </div>
+                 <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="pet_image">Upload Photo</label>
+                        <input type="file" id="pet_image" name="pet_image" class="form-control-file" accept="image/png, image/jpeg, image/webp">
+                        <small class="form-text text-muted">Optional. Max 2MB. JPG, PNG, WEBP.</small>
+                    </div>
+                 </div>
+             </div>
+
+
+            <hr>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save New Pet</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

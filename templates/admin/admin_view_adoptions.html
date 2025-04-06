@@ -1,0 +1,189 @@
+{% extends "admin/admin_layout.html" %}
+
+{% block title %}Manage Adoptions{% endblock %}
+
+{% block head_extra %}
+<style>
+    .table thead th {
+        background-color: #e9ecef;
+        border-bottom: 2px solid #dee2e6;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #495057;
+        position: relative;
+        padding-right: 1.5em;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+    }
+    .table thead th .sort-icon {
+        position: absolute;
+        right: 0.5em;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 0.8em;
+    }
+    .table thead th .sort-icon.asc::before {
+        content: "\f0de";
+        font-family: "Font Awesome 5 Free"; font-weight: 900;
+        color: #343a40;
+    }
+    .table thead th .sort-icon.desc::before {
+        content: "\f0dd";
+         font-family: "Font Awesome 5 Free"; font-weight: 900;
+         color: #343a40;
+    }
+    .table tbody td { vertical-align: middle; font-size: 0.95em; }
+    .table .badge { font-size: 0.8em; padding: 0.4em 0.6em; }
+    .status-update-form select { max-width: 150px; display: inline-block; margin-right: 5px; }
+     .filter-section { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.3rem; margin-bottom: 1.5rem; }
+     .filter-section .form-control-sm { font-size: 0.875rem; }
+     .filter-section label { font-size: 0.9em; font-weight: 500; color: #495057; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Manage Adoption Requests for Your Shelter</h2>
+
+<!-- Filter Section - Expanded with Search Bars -->
+<div class="card filter-section shadow-sm p-3">
+    <form method="GET" action="{{ url_for('admin_view_adoptions') }}" id="filterSortForm">
+        <input type="hidden" name="sort_by" value="{{ request.args.get('sort_by', 'ADOPTION_DATE') }}" id="sortBy">
+        <input type="hidden" name="sort_order" value="{{ request.args.get('sort_order', 'DESC') }}" id="sortOrder">
+
+        <div class="row align-items-end">
+            {# Row 1: Search Bars #}
+            <div class="col-md-4 mb-3">
+                <label for="filter_adopter_name">Search Adopter Name:</label>
+                <input type="text" id="filter_adopter_name" name="adopter_name" class="form-control form-control-sm" placeholder="Enter username..." value="{{ request.args.get('adopter_name', '') }}">
+            </div>
+             <div class="col-md-4 mb-3">
+                <label for="filter_adopter_email">Search Adopter Email:</label>
+                <input type="text" id="filter_adopter_email" name="adopter_email" class="form-control form-control-sm" placeholder="Enter email..." value="{{ request.args.get('adopter_email', '') }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="filter_pet_name">Search Pet Name:</label>
+                 <input type="text" id="filter_pet_name" name="pet_name" class="form-control form-control-sm" placeholder="Enter pet name..." value="{{ request.args.get('pet_name', '') }}">
+            </div>
+
+             {# Row 2: Status Dropdown & Buttons #}
+            <div class="col-md-6 mb-2">
+                <label for="filter_status">Filter by Status:</label>
+                <select id="filter_status" name="status" class="form-control form-control-sm">
+                    <option value="">All Statuses</option>
+                    {% for status_opt in distinct_statuses %}
+                         <option value="{{ status_opt }}" {% if request.args.get('status') == status_opt %}selected{% endif %}>{{ status_opt }}</option>
+                    {% endfor %}
+                 </select>
+            </div>
+            <div class="col-md-6 mb-2 d-flex">
+                 <button type="submit" class="btn btn-secondary btn-sm mr-2 flex-grow-1"><i class="fas fa-search mr-1"></i>Apply Filters / Sort</button>
+                 <a href="{{ url_for('admin_view_adoptions') }}" class="btn btn-outline-secondary btn-sm flex-grow-1">Reset All</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{# --- The rest of the template (Table structure) remains the same --- #}
+<div class="card shadow-sm">
+     <div class="card-header d-flex justify-content-between align-items-center">
+       <span>Adoption Records</span>
+    </div>
+    <div class="card-body p-0">
+        {% if adoptions %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" data-sortkey="adopter_name">Adopter <span class="sort-icon"></span></th>
+                        <th scope="col" data-sortkey="pet_name">Pet Name <span class="sort-icon"></span></th>
+                        <th scope="col" data-sortkey="ADOPTION_DATE">Applied On <span class="sort-icon"></span></th>
+                        <th scope="col" data-sortkey="ADOPTION_STATUS">Current Status <span class="sort-icon"></span></th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for adoption in adoptions %}
+                    <tr>
+                        <td>
+                            {{ adoption.adopter_name | default('N/A') }}<br>
+                            <small class="text-muted">{{ adoption.adopter_email | default('') }}</small>
+                        </td>
+                        <td>
+                            <a href="/pet/{{ adoption.PET_ID }}" target="_blank">
+                                {{ adoption.pet_name | default('N/A') }}
+                            </a><br>
+                             <small class="text-muted">{{ adoption.pet_breed | default('') }}</small>
+                        </td>
+                        <td>{{ adoption.ADOPTION_DATE.strftime('%Y-%m-%d') if adoption.ADOPTION_DATE else 'N/A' }}</td>
+                        <td>
+                             {% if adoption.ADOPTION_STATUS == "Accepted" or adoption.ADOPTION_STATUS == "Successful" %}
+                                <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i>Accepted</span>
+                            {% elif adoption.ADOPTION_STATUS == "Pending" or adoption.ADOPTION_STATUS == "Underway" %}
+                                <span class="badge badge-warning"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>
+                            {% elif adoption.ADOPTION_STATUS == "Rejected" or adoption.ADOPTION_STATUS == "Cancelled" %}
+                                <span class="badge badge-danger"><i class="fas fa-times-circle mr-1"></i>Rejected</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ adoption.ADOPTION_STATUS | default('Unknown') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin_update_adoption_status', adoption_id=adoption.ADOPTION_ID) }}" class="status-update-form d-inline-block">
+                                {{ form.hidden_tag() if form and form.hidden_tag }}
+                                <select name="new_status" class="form-control form-control-sm d-inline-block w-auto" required>
+                                    <option value="Underway" {% if adoption.ADOPTION_STATUS in ['Pending', 'Underway'] %}selected{% endif %}>Pending</option>
+                                    <option value="Successful" {% if adoption.ADOPTION_STATUS in ['Accepted', 'Successful'] %}selected{% endif %}>Accept</option>
+                                    <option value="Cancelled" {% if adoption.ADOPTION_STATUS in ['Rejected', 'Cancelled'] %}selected{% endif %}>Reject</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+         {% else %}
+            <div class="alert alert-light text-center m-4" role="alert">
+                <i class="fas fa-info-circle mr-2"></i>No adoption records found matching the criteria.
+            </div>
+         {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# --- Keep the same JavaScript from the previous version for sorting --- #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tableHeaders = document.querySelectorAll('table thead th[data-sortkey]');
+    const filterForm = document.getElementById('filterSortForm');
+    const sortByInput = document.getElementById('sortBy');
+    const sortOrderInput = document.getElementById('sortOrder');
+    const currentSortBy = sortByInput.value;
+    const currentSortOrder = sortOrderInput.value;
+
+    tableHeaders.forEach(header => {
+        const sortKey = header.getAttribute('data-sortkey');
+        const iconSpan = header.querySelector('.sort-icon');
+        if (iconSpan && sortKey === currentSortBy) {
+            iconSpan.classList.add(currentSortOrder.toLowerCase());
+        }
+    });
+
+    tableHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+            const newSortBy = this.getAttribute('data-sortkey');
+            let newSortOrder = 'ASC';
+            if (newSortBy === currentSortBy) {
+                newSortOrder = (currentSortOrder === 'ASC') ? 'DESC' : 'ASC';
+            }
+            sortByInput.value = newSortBy;
+            sortOrderInput.value = newSortOrder;
+            filterForm.submit();
+        });
+    });
+});
+</script>
+{% endblock %}
